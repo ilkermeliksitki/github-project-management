@@ -19,7 +19,7 @@ while IFS= read -r item; do
 
   # skip the item if it is already done
   if [[ "$STATUS" == "done" ]]; then
-    echo -e "Item is done, $ISSUE_URL\n"
+    echo -e "Item is already done, $ISSUE_URL\n"
     continue
   fi
 
