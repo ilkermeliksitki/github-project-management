@@ -1,14 +1,14 @@
 #!/bin/bash
 
 PROJECT_ID="PVT_kwHOBTCXXM4ArDDM"
-PROJECT_NUMMER=3
+PROJECT_NUMBER=3
 PRIORITY_FIELD_ID="PVTSSF_lAHOBTCXXM4ArDDMzgiMfxE"
 OWNER="@me"
 
 TODAY=$(date -u +%Y-%m-%d)
 
 # fetch project items
-items=$(gh project item-list $PROJECT_NUMMER --format json --jq '.' --owner "$OWNER" --limit 1000 | jq -c '.items[]')
+items=$(gh project item-list $PROJECT_NUMBER --format json --jq '.' --owner "$OWNER" --limit 1000 | jq -c '.items[]')
 
 while IFS= read -r item; do
   ID=$(echo "$item" | jq -r '.id')
