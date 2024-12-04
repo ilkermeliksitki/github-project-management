@@ -4,6 +4,8 @@ PROJECT_ID="PVT_kwHOBTCXXM4ArDDM"
 PROJECT_NUMMER=3
 OWNER="@me"
 
+gh project list --owner @me
+
 TODAY=$(date -u +%Y-%m-%d)
 
 # fetch project items
