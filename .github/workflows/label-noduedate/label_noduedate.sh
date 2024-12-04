@@ -2,7 +2,7 @@
 
 PROJECT_ID="PVT_kwHOBTCXXM4ArDDM"
 PROJECT_NUMMER=3
-OWNER="@me"
+OWNER="ilkermeliksitki"
 
 pl=$(gh project list --owner @me)
 echo $pl
