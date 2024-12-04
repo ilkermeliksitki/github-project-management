@@ -17,17 +17,17 @@ jobs:
         run: |
           bash .github/workflows/label-noduedate/label_noduedate.sh
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
       - name: Label overdue
         run: |
           bash .github/workflows/label-overdue/label_overdue.sh
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
       - name: Update priority
         run: |
           bash .github/workflows/update-priority/update_priority.sh
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
