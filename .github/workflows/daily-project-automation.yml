@@ -1,0 +1,33 @@
+name: Daily Project Automation
+
+on:
+  schedule:
+    # run every day at 2:00 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+jobs:
+  daily-project-automation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      
+      - name: Label noduedate
+        run: |
+          bash .github/workflows/label-noduedate/label_noduedate.sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Label overdue
+        run: |
+          bash .github/workflows/label-overdue/label_overdue.sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update priority
+        run: |
+          bash .github/workflows/update-priority/update_priority.sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
