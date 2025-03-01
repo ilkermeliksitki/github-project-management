@@ -1,8 +1,9 @@
 #!/bin/bash
 
-PROJECT_ID="PVT_kwHOBTCXXM4ArDDM"
-PROJECT_NUMBER=3
-PRIORITY_FIELD_ID="PVTSSF_lAHOBTCXXM4ArDDMzgiMfxE"
+PROJECT_ID="PVT_kwHOBTCXXM4AzNYo"
+PROJECT_NUMBER=5
+PRIORITY_FIELD_ID="PVTSSF_lAHOBTCXXM4AzNYozgpCfhk"
+# https://docs.github.com/en/issues/planning-and-tracking-with-projects/automating-your-project/using-the-api-to-manage-projects#finding-the-node-id-of-a-field
 OWNER="@me"
 
 TODAY=$(date -u +%Y-%m-%d)
