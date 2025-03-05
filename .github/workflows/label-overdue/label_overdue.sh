@@ -51,7 +51,8 @@ while IFS= read -r item; do
   fi
 
   # for overdue items, add a `overdue` label
-  if [[ "$DAYS_REMAINING" -lt 0 && "$marked_overdue" == false ]]; then
+  # do not mark the item as overdue if the due date is today
+  if [[ "$DAYS_REMAINING" -lt 0 && "$DUE_DATE" != $TODAY && "$marked_overdue" == false ]]; then
     echo -e "Item is overdue labelling, $ISSUE_URL\n"
     gh issue edit $ISSUE_URL --add-label "overdue"
     sleep 3
