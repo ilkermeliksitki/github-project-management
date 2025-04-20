@@ -19,6 +19,12 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
+      - name: Delete noduedate
+        run: |
+          bash .github/workflows/delete-noduedate/delete_noduedate.sh
+        env:
+          GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+
       - name: Label overdue
         run: |
           bash .github/workflows/label-overdue/label_overdue.sh
