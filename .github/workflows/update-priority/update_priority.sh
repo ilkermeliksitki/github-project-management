@@ -33,12 +33,6 @@ while IFS= read -r item; do
     continue
   fi
 
-  # skip items that are already at highest priority
-  if [[ "$PRIORITY" == "CRITICAL" ]]; then
-    echo -e "Item is already at highest priority (CRITICAL), no update needed, $ISSUE_URL\n"
-    continue
-  fi
-
   # calculate the remaining days until the due date
   DAYS_REMAINING=$(( ( $(date -u -d "$DUE_DATE" +%s) - $(date -u -d "$TODAY" +%s) ) / 86400 ))
 
