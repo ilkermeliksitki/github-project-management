@@ -37,3 +37,8 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
+      - name: Close abandoned issues
+        run: |
+          bash .github/workflows/close-abandoned/close_abandoned.sh
+        env:
+          GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
