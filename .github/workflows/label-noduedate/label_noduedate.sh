@@ -8,6 +8,10 @@ TODAY=$(date -u +%Y-%m-%d)
 
 # fetch project items
 items=$(gh project item-list $PROJECT_NUMBER --format json --jq '.' --owner "$OWNER" --limit 1000 | jq -c '.items[]')
+if [[ $? -ne 0 ]]; then
+  echo "Failed to fetch project items."
+  exit 1
+fi
 
 while IFS= read -r item; do
   TITLE=$(echo "$item" | jq -r '.title')
@@ -25,6 +29,10 @@ while IFS= read -r item; do
 
   # fetch issue labels
   labels=$(gh issue view $ISSUE_URL --json labels --jq '.labels[].name')
+  if [[ $? -ne 0 ]]; then
+    echo "Failed to fetch labels for issue: $ISSUE_URL"
+    exit 1
+  fi
 
   marked_noduedate=false
   for label in $labels; do
@@ -45,6 +53,10 @@ while IFS= read -r item; do
   if [[ $DUE_DATE == "null" ]]; then
     echo -e "Item has no due date, labeling as noduedate, $ISSUE_URL\n"
     gh issue edit $ISSUE_URL --add-label "noduedate"
+    if [[ $? -ne 0 ]]; then
+      echo "Failed to add label 'noduedate' to issue: $ISSUE_URL"
+      exit 1
+    fi
   else
     echo -e "Item has a due date, skipping, $ISSUE_URL\n"
   fi

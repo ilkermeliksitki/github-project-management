@@ -8,8 +8,17 @@ OWNER="@me"
 
 TODAY=$(date -u +%Y-%m-%d)
 
+# check command as first inp arg is the error message
+check_command_run() {
+  if [[ $? -ne 0 ]]; then
+    echo "Error: $1"
+    exit 1
+  fi
+}
+
 # fetch project items
 items=$(gh project item-list $PROJECT_NUMBER --format json --jq '.' --owner "$OWNER" --limit 1000 | jq -c '.items[]')
+check_command_run "Failed to fetch project items for project number: $PROJECT_NUMBER"
 
 while IFS= read -r item; do
   ID=$(echo "$item" | jq -r '.id')
@@ -41,6 +50,7 @@ while IFS= read -r item; do
   if [[ "$DAYS_REMAINING" -le 3 ]]; then
     if [[ "$PRIORITY" != "CRITICAL" ]]; then
        gh project item-edit --id $ID --project-id $PROJECT_ID --field-id $PRIORITY_FIELD_ID --single-select-option-id "fd8c0199"
+       check_command_run "Failed to update priority to CRITICAL for item $ID"
        echo -e "Priority updated to CRITICAL, $ISSUE_URL\n"
      else
        echo -e "Priority is already CRITICAL, no update needed, $ISSUE_URL\n"
@@ -48,6 +58,7 @@ while IFS= read -r item; do
   elif [[ "$DAYS_REMAINING" -le 5 ]]; then
     if [[ "$PRIORITY" != "urgent" ]]; then
        gh project item-edit --id $ID --project-id $PROJECT_ID --field-id $PRIORITY_FIELD_ID --single-select-option-id "95a57acb"
+       check_command_run "Failed to update priority to URGENT for item $ID"
        echo -e "Priority updated to URGENT, $ISSUE_URL\n"
      else
        echo -e "Priority is already URGENT, no update needed, $ISSUE_URL\n"
@@ -55,6 +66,7 @@ while IFS= read -r item; do
   elif [[ "$DAYS_REMAINING" -le 8 ]]; then
     if [[ "$PRIORITY" != "high" ]]; then
        gh project item-edit --id $ID --project-id $PROJECT_ID --field-id $PRIORITY_FIELD_ID --single-select-option-id "79628723"
+       check_command_run "Failed to update priority to HIGH for item $ID"
        echo -e "Priority updated to HIGH, $ISSUE_URL\n"
      else
        echo -e "Priority is already HIGH, no update needed, $ISSUE_URL\n"
@@ -62,6 +74,7 @@ while IFS= read -r item; do
   elif [[ "$DAYS_REMAINING" -le 15 ]]; then
     if [[ "$PRIORITY" != "medium" ]]; then
        gh project item-edit --id $ID --project-id $PROJECT_ID --field-id $PRIORITY_FIELD_ID --single-select-option-id "0a877460"
+       check_command_run "Failed to update priority to MEDIUM for item $ID"
        echo -e "Priority updated to MEDIUM, $ISSUE_URL\n"
      else
        echo -e "Priority is already MEDIUM, no update needed, $ISSUE_URL\n"
@@ -69,6 +82,7 @@ while IFS= read -r item; do
   else 
     if [[ "$PRIORITY" != "low" ]]; then
        gh project item-edit --id $ID --project-id $PROJECT_ID --field-id $PRIORITY_FIELD_ID --single-select-option-id "da944a9c"
+       check_command_run "Failed to update priority to LOW for item $ID"
        echo -e "Priority updated to LOW, $ISSUE_URL\n"
      else
        echo -e "Priority is already LOW, no update needed, $ISSUE_URL\n"

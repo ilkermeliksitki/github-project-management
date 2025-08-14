@@ -8,6 +8,10 @@ TODAY=$(date -u +%Y-%m-%d)
 
 # fetch project items
 items=$(gh project item-list $PROJECT_NUMBER --format json --jq '.' --owner "$OWNER" --limit 1000 | jq -c '.items[]')
+if [[ $? -ne 0 ]]; then
+  echo "Failed to fetch project items."
+  exit 1
+fi
 
 while IFS= read -r item; do
   TITLE=$(echo "$item" | jq -r '.title')
@@ -34,6 +38,10 @@ while IFS= read -r item; do
 
   # fetch issue labels
   labels=$(gh issue view $ISSUE_URL --json labels --jq '.labels[].name')
+  if [[ $? -ne 0 ]]; then
+    echo "Failed to fetch issue labels for $ISSUE_URL."
+    exit 1
+  fi
 
   # check if the issue is already marked as overdue or not
   marked_overdue=false
@@ -55,6 +63,11 @@ while IFS= read -r item; do
   if [[ "$DAYS_REMAINING" -lt 0 && "$DUE_DATE" != $TODAY && "$marked_overdue" == false ]]; then
     echo -e "Item is overdue labelling, $ISSUE_URL\n"
     gh issue edit $ISSUE_URL --add-label "overdue"
+    if [[ $? -ne 0 ]]; then
+      echo "Failed to label issue $ISSUE_URL as overdue."
+      exit 1
+    fi
+
     sleep 3
   else
     echo -e "Item is not overdue, $ISSUE_URL\n"

@@ -9,6 +9,11 @@ TODAY=$(date -u +%Y-%m-%d)
 # fetch project items
 items=$(gh project item-list $PROJECT_NUMBER --format json --jq '.' --owner "$OWNER" --limit 1000 | jq -c '.items[]')
 
+if [[ $? -ne 0 ]]; then
+  echo "Failed to fetch project items."
+  exit 1
+fi
+
 while IFS= read -r item; do
   TITLE=$(echo "$item" | jq -r '.title')
   ISSUE_URL=$(echo "$item" | jq -r '.content.url')
@@ -26,6 +31,12 @@ while IFS= read -r item; do
   if [[ "$STATUS" == "abandoned" ]]; then
     echo -e "Closing issue: $ISSUE_URL\n"
     gh issue close "$ISSUE_URL" --comment "Closed by script on $TODAY, because it was abandoned."
+
+    if [[ $? -ne 0 ]]; then
+      echo "Failed to close issue: $ISSUE_URL"
+      exit 1
+    fi
+
     continue
   fi
 
