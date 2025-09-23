@@ -2,27 +2,71 @@
 
 USER="ilkermeliksitki"
 PROJECT_NUMBER=5
-LIMIT=1000
 MONTHS_AGO=6
+CURSOR=null
 
-# fetch project items
+query='
+query ($user: String!, $projectNumber: Int!, $cursor: String) {
+  user(login: $user) {
+    projectV2(number: $projectNumber) {
+      items(first: 100, after: $cursor) {
+        pageInfo {
+            hasNextPage
+            endCursor
+        }
+        nodes {
+          id
+          content {
+            ... on Issue {
+              title
+              closedAt
+            }
+            ... on PullRequest {
+              title
+              closedAt
+            }
+          }
+        }
+      }
+    }
+  }
+}'
 
-items=$(gh project item-list "$PROJECT_NUMBER" --owner "$USER" --limit "$LIMIT" --format json --jq '.items[]')
+while true; do
+    if [[ "$CURSOR" == null ]]; then
+        vars=(-f user="$USER" -F projectNumber=$PROJECT_NUMBER -F cursor=null)
+    else
+        vars=(-f user="$USER" -F projectNumber=$PROJECT_NUMBER -F cursor="$CURSOR")
+    fi
+    response=$(gh api graphql -f query="$query" "${vars[@]}" --jq '.data.user.projectV2.items')
 
-echo "$items" | jq --compact-output '.' | while read -r item; do
-    item_id=$(echo "$item" | jq --raw-output '.id')
-    item_status=$(echo "$item" | jq --raw-output '.status')
-    title=$(echo "$item" | jq --raw-output '.content.title')
-    due_date=$(echo "$item" | jq --raw-output '."due date"')
+    # delete item from the project if it is closed more than MONTHS_AGO
+    items=$(echo "$response" | jq -r '.nodes[]')
+    echo $items | jq --compact-output '.' | while read -r item; do
+        item_id=$(echo "$item" | jq -r '.id')
+        closed_at=$(echo "$item" | jq -r '.content.closedAt')
+        title=$(echo "$item" | jq -r '.content.title')
+        if [[ "$closed_at" != null ]]; then
+            closed_timestamp=$(date -d "$closed_at" +%s)
+            months_ago_timestamp=$(date -d "$MONTHS_AGO months ago" +%s)
 
-    # if status is done and due date is older than $MONTHS_AGO months, delete the item from project
-    if [[ "$item_status" == "done" ]]; then
-        if [[ -n "$due_date" ]]; then
-            due_date_epoch=$(date --date="$due_date" +%s)
-            due_date_months_ago_epoch=$(date --date="$MONTHS_AGO months ago" +%s)
-            if (( due_date_epoch < due_date_months_ago_epoch )); then
-                echo "Deleting item => ${title}; with due date ${due_date}"
+            if (( closed_timestamp < months_ago_timestamp )); then
+                echo "🗑️ '$title' => Deletion"
+                gh project item-delete $PROJECT_NUMBER --owner "$USER" --item-id "$item_id"
+            else
+                echo "✅ '$title' => No deletion"
             fi
+        else
+            echo "⏳ '$title' is still open => Skipping."
+            continue
         fi
-   fi
+    done
+
+    # pagination
+    has_next_page=$(echo "$response" | jq -r '.pageInfo.hasNextPage')
+    CURSOR=$(echo "$response" | jq -r '.pageInfo.endCursor')
+
+    if [[ "$has_next_page" == "false" ]]; then
+        break
+    fi
 done
