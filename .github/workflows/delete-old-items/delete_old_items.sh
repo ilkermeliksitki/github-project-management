@@ -2,7 +2,7 @@
 
 USER="ilkermeliksitki"
 PROJECT_NUMBER=5
-LIMIT=4
+LIMIT=1000
 MONTHS_AGO=6
 
 # fetch project items
