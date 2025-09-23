@@ -1,0 +1,19 @@
+name: Delete old items from project
+
+on:
+  schedule:
+    - cron: '0 0 * * 0'  # run weekly at midnight on sundays
+  workflow_dispatch:
+
+jobs:
+  on_issue_opened:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      
+      - name: Delete old items
+        run: |
+          bash .github/workflows/delete-old-items/delete_old_items.sh
+        env:
+          GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
