@@ -52,7 +52,7 @@ while true; do
 
             if (( closed_timestamp < months_ago_timestamp )); then
                 echo "🗑️ '$title' => Deletion"
-                gh project item-delete $PROJECT_NUMBER --owner "$USER" --item-id "$item_id"
+                gh project item-delete $PROJECT_NUMBER --owner "$USER" --id "$item_id"
             else
                 echo "✅ '$title' => No deletion"
             fi
