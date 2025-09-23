@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  on_issue_opened:
+  delete_old_items:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
