@@ -7,7 +7,6 @@ gh api graphql -f query='
   query($user: String! $number: Int! $endCursor: String){
     user(login: $user){
       projectV2(number: $number) {
-        title
         repositories(first: 100, after: $endCursor) {
           nodes {
             nameWithOwner
@@ -19,4 +18,5 @@ gh api graphql -f query='
         }
       }
     }
-  }' -f user="$USER" -F number=$PROJECT_NUMBER --paginate --jq '.'
+  }' -f user="$USER" -F number=$PROJECT_NUMBER --paginate \
+     --jq '.data.user.projectV2.repositories.nodes[].nameWithOwner'
